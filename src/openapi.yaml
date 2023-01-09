@@ -1,0 +1,30 @@
+openapi: 3.0.3
+info:
+  title: light spectroscope service
+  description: |-
+    This service provides access to the light spectroscope service.
+  version: 0.1.0
+paths:
+
+  /info:
+    get:
+      summary: get service related informations
+      description: Returns the version, url path prefix and startup time of the service.
+      operationId: getServiceInfo
+      responses:
+        '200':
+          description: An object containing the version, pathPrefix and start time of the service.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: '1.0.0'
+                  pathPrefix:
+                    type: string
+                    example: ''
+                  start:
+                    type: string
+                    example: '2022-11-28T18:21:34.846Z'

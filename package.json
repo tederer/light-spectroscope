@@ -1,0 +1,31 @@
+{
+   "name": "light-spectroscope",
+   "version": "0.1.0",
+   "description": "Implementation of a low cost light-spectroscope using AS7265x sensors.",
+   "private": true,
+   "author": {
+      "name": "Thomas Ederer",
+      "email": "thomas@orchideenvermehrung.at"
+   },
+   "licenses": [
+      {
+         "type": "MIT"
+      }
+   ],
+   "dependencies": {
+      "express": "4.x",
+      "body-parser": "^1.20.1",
+      "swagger-ui-dist" : "^4.15.5"
+   },
+   "devDependencies": {
+      "grunt": "1.x",
+      "mocha": "10.x",
+      "expect.js": "0.x",
+      "grunt-contrib-clean": "2.x",
+      "grunt-contrib-jshint": "3.x",
+      "grunt-mocha-test": "0.x"
+   },
+   "engines": {
+      "node": ">=18.x"
+   }
+}
