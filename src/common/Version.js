@@ -1,10 +1,10 @@
-/* global assertNamespace, spectroscope, __dirname */
+/* global assertNamespace, common, __dirname */
 
-assertNamespace('spectroscope');
+assertNamespace('common');
 
 var fs = require('fs');
    
-spectroscope.getVersion = function getVersion() {
+common.getVersion = function getVersion() {
     var result;
     try {
         var fileContent = fs.readFileSync(__dirname + '/../../package.json', 'utf8');

@@ -1,9 +1,9 @@
-/* global assertNamespace, spectroscope, process, __dirname */
+/* global assertNamespace, common, process, __dirname */
 
 require('../logging/LoggingSystem.js');
 require('../Version.js');
 
-assertNamespace('spectroscope.webserver');
+assertNamespace('common.webserver');
 
 /**
  * constructor function of a webserver
@@ -18,9 +18,9 @@ assertNamespace('spectroscope.webserver');
  * initializationFunction  this function gets called before the webserver starts listening 
  *                         and it receiving the Express app object
  */
-spectroscope.webserver.Webserver = function Webserver(settings, initializationFunction) {
+common.webserver.Webserver = function Webserver(settings, initializationFunction) {
 
-   var LOGGER                    = spectroscope.logging.LoggingSystem.createLogger('Webserver');
+   var LOGGER                    = common.logging.LoggingSystem.createLogger('Webserver');
    
    var express                   = require('express');
    var bodyParser                = require('body-parser');

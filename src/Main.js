@@ -1,4 +1,4 @@
-/* global spectroscope, __dirname, process */
+/* global common, __dirname, process */
 
 require('./common/logging/LoggingSystem.js');
 require('./common/webserver/Webserver.js');
@@ -13,10 +13,10 @@ var startup = async function startup() {
       pathPrefix:                PATH_PREFIX, 
       openApiYamlFilenamePath:   __dirname + '/openapi.yaml',
       activateSwagger:           process.env.ACTIVATE_SWAGGER === 'true',
-      info:                      spectroscope.MainInitializer.initialize(PATH_PREFIX)
+      info:                      common.MainInitializer.initialize(PATH_PREFIX)
    };
    
-   spectroscope.webserver.Webserver(webserverSettings, app => {});
+   common.webserver.Webserver(webserverSettings, app => {});
 };
 
 startup();

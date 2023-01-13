@@ -1,15 +1,15 @@
-/* global assertNamespace, spectroscope */
+/* global assertNamespace, common */
 
 require('../NamespaceUtils.js');
 require('./Logger.js');
 require('./LoggingSystem.js');
 
-assertNamespace('spectroscope.logging');
+assertNamespace('common.logging');
 
 /**
  * ConsoleLogger writes the log output to the console.
  */
-spectroscope.logging.ConsoleLogger = function ConsoleLogger(name, minLogLevel) {
+common.logging.ConsoleLogger = function ConsoleLogger(name, minLogLevel) {
    var MESSAGE_SEPARATOR = ';';
    var logLevel = minLogLevel;
 
@@ -34,20 +34,20 @@ spectroscope.logging.ConsoleLogger = function ConsoleLogger(name, minLogLevel) {
    };
 
    this.logDebug = function logDebug(messageOrSupplier) {
-      log(spectroscope.logging.Level.DEBUG, messageOrSupplier);
+      log(common.logging.Level.DEBUG, messageOrSupplier);
    };
    
    this.logInfo = function logInfo(messageOrSupplier) {
-      log(spectroscope.logging.Level.INFO, messageOrSupplier);
+      log(common.logging.Level.INFO, messageOrSupplier);
    };
    
    this.logWarning = function logWarning(messageOrSupplier) {
-      log(spectroscope.logging.Level.WARNING, messageOrSupplier);
+      log(common.logging.Level.WARNING, messageOrSupplier);
    };
    
    this.logError = function logError(messageOrSupplier) {
-      log(spectroscope.logging.Level.ERROR, messageOrSupplier);
+      log(common.logging.Level.ERROR, messageOrSupplier);
    };
 };
 
-spectroscope.logging.ConsoleLogger.prototype = new spectroscope.logging.Logger();
+common.logging.ConsoleLogger.prototype = new common.logging.Logger();

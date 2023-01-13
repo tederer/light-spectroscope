@@ -4,7 +4,8 @@
 var path = require('path');
 var fileSystem = require('fs');
 
-global.PROJECT_ROOT_PATH = path.resolve('.');
+global.PROJECT_ROOT_PATH        = path.resolve('.');
+global.PROJECT_SOURCE_ROOT_PATH = global.PROJECT_ROOT_PATH + '/src';
 
 module.exports = function(grunt) {
 
@@ -26,10 +27,10 @@ module.exports = function(grunt) {
       mochaTest: {
 			libRaw: {
 			  options: {
-				 require: ['testGlobals.js'],
+				 require: ['./test/testGlobals.js'],
 				 reporter: 'spec'
 			  },
-			  src: ['services/**/test/**/*.js']
+			  src: ['test/**/*.js']
 			}
       },
       

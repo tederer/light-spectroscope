@@ -1,20 +1,20 @@
-/* global spectroscope, assertNamespace, process */
+/* global common, assertNamespace, process */
 
 require('./NamespaceUtils.js');
 require('./logging/LoggingSystem.js');
 require('./Version.js');
 
-assertNamespace('spectroscope');
+assertNamespace('common');
 
-spectroscope.MainInitializer = {
+common.MainInitializer = {
 
    initialize: function initialize(pathPrefix) {
       const DEFAULT_LOG_LEVEL = 'INFO';
-      const LOGGER            = spectroscope.logging.LoggingSystem.createLogger('MainInitializer');
-      const logLevel          = spectroscope.logging.Level[process.env.LOG_LEVEL ?? DEFAULT_LOG_LEVEL];
-      const version           = spectroscope.getVersion();
+      const LOGGER            = common.logging.LoggingSystem.createLogger('MainInitializer');
+      const logLevel          = common.logging.Level[process.env.LOG_LEVEL ?? DEFAULT_LOG_LEVEL];
+      const version           = common.getVersion();
       
-      spectroscope.logging.LoggingSystem.setMinLogLevel(logLevel);
+      common.logging.LoggingSystem.setMinLogLevel(logLevel);
       
       const info = {
          version:    (typeof version === 'string') ? version : 'not available',

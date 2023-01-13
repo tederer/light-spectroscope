@@ -1,8 +1,8 @@
-/* global assertNamespace, spectroscope */
+/* global assertNamespace, common */
 
 require('../NamespaceUtils.js');
 
-assertNamespace('spectroscope.logging');
+assertNamespace('common.logging');
 
 /**
  * Logger provides methods to log messages with differen log levels. 
@@ -10,10 +10,10 @@ assertNamespace('spectroscope.logging');
  * Suppliers should get used when the propability is high that the message will not get 
  * logged and building the message costs a lot of time.
  */
-spectroscope.logging.Logger = function Logger() {
+common.logging.Logger = function Logger() {
    
    var createErrorFor = function createErrorFor(functionName) {
-      return new Error('implementation of spectroscope.logging.Logger did not implement the method \"' + functionName + '\"');
+      return new Error('implementation of common.logging.Logger did not implement the method \"' + functionName + '\"');
    };
    
    this.setMinLogLevel = function setMinLogLevel(level) {
