@@ -151,7 +151,7 @@ var setup = function setup() {
 };
 
 describe('BusBridge', function() {
-	
+   
    beforeEach(setup);
    
    it('creating an instance of a bus bridge results in an instance/object', function() {

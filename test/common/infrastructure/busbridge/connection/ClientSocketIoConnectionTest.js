@@ -44,7 +44,7 @@ var setup = function setup() {
 };
 
 describe('ClientSocketIoConnection', function() {
-	
+   
    beforeEach(setup);
    
    it('a new instance is an instance/object', function() {

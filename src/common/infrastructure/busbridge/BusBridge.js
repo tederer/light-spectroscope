@@ -46,16 +46,16 @@ common.infrastructure.busbridge.BusBridge = function BusBridge(bus, topicsToTran
 
    var connection = connectionFactoryFunction(onConnectCallback, onDisconnectCallback, onMessageCallback);
    
-	bus.publish(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC, 'false');
+   bus.publish(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC, 'false');
 
    topicsToTransmit.forEach(function(topic) {
       bus.subscribeToPublication(topic, function(data) {
-			var message = common.infrastructure.busbridge.MessageFactory.createPublicationMessage(topic, data);
-			connection.send(message);
+         var message = common.infrastructure.busbridge.MessageFactory.createPublicationMessage(topic, data);
+         connection.send(message);
       });
       bus.subscribeToCommand(topic, function(data) {
-			var message = common.infrastructure.busbridge.MessageFactory.createCommandMessage(topic, data);
-			connection.send(message);
+         var message = common.infrastructure.busbridge.MessageFactory.createCommandMessage(topic, data);
+         connection.send(message);
       });
    });
 };

@@ -42,7 +42,7 @@ var setup = function setup() {
 };
 
 describe('Bus', function() {
-	
+   
    beforeEach(setup);
    
    it('creating an instance of a bus is an instance/object', function() {
