@@ -5,6 +5,7 @@ require('./common/webserver/Webserver.js');
 require('./common/MainInitializer.js');
 require('./common/infrastructure/bus/Bus.js');
 require('./common/infrastructure/busbridge/ServerSocketIoBusBridge.js');
+require('./Sensor.js');
 
 var app = require('express')();
 
@@ -28,6 +29,8 @@ var startup = async function startup() {
       var io         = require('socket.io')(server);
       var busBridge  = new common.infrastructure.busbridge.ServerSocketIoBusBridge(bus, topicsToTransmit, io);
    });
+
+   new spectroscope.Sensor('com5');
 };
 
 startup();

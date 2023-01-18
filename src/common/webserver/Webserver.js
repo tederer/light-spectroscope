@@ -1,6 +1,7 @@
 /* global assertNamespace, common, process, __dirname */
 
 require('../logging/LoggingSystem.js');
+require('../NamespaceUtils.js');
 require('../Version.js');
 
 assertNamespace('common.webserver');
