@@ -7,8 +7,16 @@ assertNamespace('spectroscope.shared.topics');
 //                PUBLICATIONS
 
 /**
- * The server publishes on this topic the current list of addresses that were not at home.
+ * The server publishes on this topic the current state of the light spectroscope sensor
  *
- * example: [{"street":"Hauptstraße","number":"33","creationTimestamp":1590331561740,"id":2},{"street":"Seestraße","number":"11","creationTimestamp":1590331617982,"id":3}]
+ * example: {"versions":{"software":"12.0.0","hardware":"0x4041"}}
  */
-spectroscope.shared.topics.TO_BE_DEFINED = '/shared/ToBeDefined'; // TODO
+spectroscope.shared.topics.SENSOR_STATE = '/shared/sensorState';
+
+
+/**
+ * The server publishes on this topic the current values of the light spectroscope sensor
+ *
+ * example: TODO
+ */
+spectroscope.shared.topics.SENSOR_VALUES = '/shared/sensorValues';
