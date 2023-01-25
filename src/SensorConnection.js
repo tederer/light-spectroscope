@@ -41,9 +41,9 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       }
 
       try {
+         LOGGER.logDebug('sending: ' + command);
          var response         = await lineReader.question(command + '\n', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
          var trimmedResponse  = (response ?? '').trim();
-
          LOGGER.logDebug('response = "' + response + '"');
          
          if (trimmedResponse.toUpperCase().endsWith('OK')) {
@@ -86,7 +86,7 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       
       while(lineRead) {
          try {
-            var line = await lineReader.question('', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
+            await lineReader.question('', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
          } catch(error) {
             lineRead = false;
          }
