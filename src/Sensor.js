@@ -3,23 +3,21 @@
 require('./common/NamespaceUtils.js');
 require('./common/logging/LoggingSystem.js');
 require('./SharedTopics.js');
-
+require('./SensorConnection.js');
 assertNamespace('spectroscope');
 
 /**
- * constructor function of a light spectroscope sensor
+ * constructor function of a light spectroscope sensor. It polls the current values in
+ * the interval POLLING_INTERVAL_IN_MS and publishes them on the bus using the topic 
+ * spectroscope.shared.topics.SENSOR_VALUES.
  * 
- * serialPortPath (e.g. 'com5', '/dev/tty-usbserial1', ...)
+ * serialPortPath    (e.g. 'com5', '/dev/tty-usbserial1', ...)
+ * bus               instance of common.infrastructure.bus.Bus
  */
 spectroscope.Sensor = function Sensor(serialPortPath, bus) {
 
    const POLLING_INTERVAL_IN_MS  = 1000;
-   const RESTART_DELAY_IN_MS     = 1000;
-   const COMMAND_TIMEOUT_IN_MS   = 1000;
-   const BAUDRATE                = 115200;
-
-   const ENTIRE_LINE             = 0;
-
+   
    const WAVELENGTHS             =  {  description: 'wave lengths',
                                        mapping: [  {sourceIndex: 12, name: '410nm'},
                                                    {sourceIndex: 13, name: '435nm'},
@@ -47,40 +45,12 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
                                                    {sourceIndex: 2, name: 'AS72653'}]
                                     };
    
-   const { SerialPort }         = require('serialport');
-   const readlinePromises       = require('node:readline/promises');
-   
-   var LOGGER = common.logging.LoggingSystem.createLogger('Sensor');
-   
-   var port;
-   var lineReader;
+   var LOGGER     = common.logging.LoggingSystem.createLogger('Sensor');
+   var connection = new spectroscope.SensorConnection(serialPortPath, bus);
    var pendingPollTask;
-   var firstPoll = true;
-
+   
    var nowInMs = function nowInMs() {
       return Date.now();
-   };
-
-   var publishSensorState = function publishSensorState(softwareVersion, hardwareVersion) {
-      var data = (softwareVersion === undefined) ? {} : {
-         versions: {
-            software: softwareVersion, 
-            hardware: hardwareVersion
-         }
-      };
-      bus.publish(spectroscope.shared.topics.SENSOR_STATE, data);
-   };
-
-   var publishEmptySensorState = function publishEmptySensorState() {
-      publishSensorState();
-   };
-
-   var mapValues = function mapValues(rawValues) {
-      return mapCommaSeparatedValues(rawValues, WAVELENGTHS, 'µW/cm²');
-   };
-
-   var mapTemperatures = function mapTemperatures(temperatures) {
-      return mapCommaSeparatedValues(temperatures, SENSOR_DEVICES, '°C');
    };
 
    var mapCommaSeparatedValues = function mapCommaSeparatedValues(commaSeparatedValues, format, unit) {
@@ -97,6 +67,14 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
       return result;
    };
 
+   var mapValues = function mapValues(rawValues) {
+      return mapCommaSeparatedValues(rawValues, WAVELENGTHS, 'µW/cm²');
+   };
+
+   var mapTemperatures = function mapTemperatures(temperatures) {
+      return mapCommaSeparatedValues(temperatures, SENSOR_DEVICES, '°C');
+   };
+
    var publishValues = function publishValues(rawValues, calibratedValues, temperatures, timestamp) {
       var data = {
          timestamp:        timestamp, 
@@ -107,137 +85,37 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
       bus.publish(spectroscope.shared.topics.SENSOR_VALUES, data);
    };
 
-   var timeout = async function timeout() {
-      return new Promise((_, reject) => {
-         setTimeout(() => reject('timed out'), COMMAND_TIMEOUT_IN_MS);
-      });
-   };
-
-   var sendCommand = async function sendCommand(command) {
-      try {
-         var question         = lineReader.question(command + '\n');
-         var response         = await Promise.race([timeout(), question]);
-         var trimmedResponse  = (response ?? '').trim();
-
-         LOGGER.logDebug('response = "' + response + '"');
-         if (trimmedResponse.toUpperCase().endsWith('OK')) {
-            return trimmedResponse.substring(0, trimmedResponse.length - 'OK'.length).trim();
-         } else {
-            throw 'unexpected response "' + response + '"';
-         }
-      } catch(error) {
-         throw error;
-      }
-   };
-
    var pollData = async function pollData() {
-      pendingPollTask = undefined;
-      
-      if (lineReader !== undefined) {
-         var startInMs = nowInMs();
-      
-         try {
-            if (firstPoll) {
-               firstPoll           = false;
-               var softwareVersion = await sendCommand('ATVERSW');
-               var hardwareVersion = await sendCommand('ATVERHW');
-               publishSensorState(softwareVersion, hardwareVersion);
-            }
+      pendingPollTask     = undefined;
+      var startInMs       = nowInMs();
+      var continuePolling = true;
 
-            var rawValues        = await sendCommand('ATDATA');
-            var calibratedValues = await sendCommand('ATCDATA');
-            var temperatures     = await sendCommand('ATTEMP');
-            console.log(await sendCommand('ATINTTIME'));
-            publishValues(rawValues, calibratedValues, temperatures, startInMs);
-         } catch(error) {
-            LOGGER.logError('failed to poll values: ' + error);
-            // TODO disconnect
-         }
+      try {
+         var rawValues        = await connection.sendCommand('ATDATA');
+         var calibratedValues = await connection.sendCommand('ATCDATA');
+         var temperatures     = await connection.sendCommand('ATTEMP');
+         publishValues(rawValues, calibratedValues, temperatures, startInMs);
+      } catch(error) {
+         LOGGER.logError('failed to poll values: ' + error);
+         continuePolling = false;
+         connection.restart();
+      }
 
+      if (continuePolling) {
          var sleepDurationInMs = Math.max(0, POLLING_INTERVAL_IN_MS - (nowInMs() - startInMs));
          pendingPollTask       = setTimeout(pollData, sleepDurationInMs);
       }
    };
 
-   var initializeConnection = async function initializeConnection() {
-      var initialized = false;
-      var retries     = 5;
-      var lastError;
-
-      LOGGER.logInfo('initializing connection');
-
-      lineReader.clearLine(ENTIRE_LINE);
-      
-      while (!initialized && (retries > 0)) {
-         var command = 'AT';
-         try {
-            await sendCommand(command);
-            initialized = true;
-         } catch(error) {
-            lastError = 'failed to send "' + command + '": ' + error;
-         }
-         retries--;
-      }
-
-      if (!initialized) {
-         throw lastError;
-      }
-   };
-
-   var closeConnection = function closeConnection() {
-      LOGGER.logInfo('closing connection');
-      
-      publishEmptySensorState();
-
+   var onConnectionClosed = function onConnectionClosed() {
       if (pendingPollTask !== undefined) {
          var pendingPollTaskToClear = pendingPollTask;
          pendingPollTask            = undefined;
          clearTimeout(pendingPollTaskToClear);
       }
-
-      if (lineReader !== undefined) {
-         var lineReaderToClose = lineReader;
-         lineReader            = undefined;
-         port                  = undefined;
-         lineReaderToClose.close();
-      }
-
-      firstPoll = true;
    };
 
-   var restartConnection = function restartConnection() {
-      closeConnection();
-      setTimeout(openConnection, RESTART_DELAY_IN_MS);
-   };
-
-   var openConnection = function openConnection() { // jshint ignore:line
-      LOGGER.logInfo('opening connection (path=' + serialPortPath + ')');
-      
-      var serialPort = new SerialPort({path: serialPortPath, baudRate: BAUDRATE});
-      
-      serialPort.on('open', async () => {
-         LOGGER.logInfo('connection opened');
-         port       = serialPort;
-         lineReader = readlinePromises.createInterface({ input: serialPort, output: serialPort });
-         try {
-            await initializeConnection();
-            LOGGER.logInfo('initialized connection');
-            pollData();
-         } catch(error) {
-            LOGGER.logError('failed to initialize connection: ' + error);
-         }
-      });
-      
-      serialPort.on('error', message => {
-         LOGGER.logError('failed to open connection: ' + message);
-         restartConnection();
-      });
-      
-      serialPort.on('close', message => {
-         LOGGER.logError('received connection close event: ' + message);
-         restartConnection();
-      });
-   };
-
-   openConnection();
+   connection.onConnectionOpened(pollData);
+   connection.onConnectionClosed(onConnectionClosed);
+   connection.open();
 };
