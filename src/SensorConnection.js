@@ -174,4 +174,6 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    this.onConnectionClosed = function onConnectionClosed(callback) {
       closedCallback = callback;
    };
+
+   publishDisconnectedState();
 };

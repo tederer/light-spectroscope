@@ -48,6 +48,7 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
    var LOGGER     = common.logging.LoggingSystem.createLogger('Sensor');
    var connection = new spectroscope.SensorConnection(serialPortPath, bus);
    var pendingPollTask;
+   var lastPubishedValues;
    
    var nowInMs = function nowInMs() {
       return Date.now();
@@ -75,14 +76,25 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
       return mapCommaSeparatedValues(temperatures, SENSOR_DEVICES, '°C');
    };
 
-   var publishValues = function publishValues(rawValues, calibratedValues, temperatures, timestamp) {
-      var data = {
-         timestamp:        timestamp, 
-         rawValues:        mapValues(rawValues), 
-         calibratedValues: mapValues(calibratedValues), 
-         temperatures:     mapTemperatures(temperatures)
-      };
-      bus.publish(spectroscope.shared.topics.SENSOR_VALUES, data);
+   var publishValues = function publishValues(timestamp, rawValues, calibratedValues, temperatures) {
+      LOGGER.logDebug('requested to publish values (timestamp=' + timestamp + ',rawValues=' + rawValues +
+                      ',calibratedValues=' + calibratedValues + ',temperatures=' + temperatures + ')');
+      var values = { timestamp: timestamp };
+      if (rawValues !== undefined) {
+         values.rawValues        = mapValues(rawValues);
+         values.calibratedValues = mapValues(calibratedValues);
+         values.temperatures     = mapTemperatures(temperatures);
+      }
+
+      var stringifiedValues = JSON.stringify(values);
+      if (lastPubishedValues !== stringifiedValues) {
+         bus.publish(spectroscope.shared.topics.SENSOR_VALUES, values);
+         lastPubishedValues = stringifiedValues;
+      }
+   };
+
+   var publishEmptyValues = function publishEmptyValues() {
+      publishValues(nowInMs());
    };
 
    var pollData = async function pollData() {
@@ -94,10 +106,11 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
          var rawValues        = await connection.sendCommand('ATDATA');
          var calibratedValues = await connection.sendCommand('ATCDATA');
          var temperatures     = await connection.sendCommand('ATTEMP');
-         publishValues(rawValues, calibratedValues, temperatures, startInMs);
+         publishValues(startInMs, rawValues, calibratedValues, temperatures);
       } catch(error) {
-         LOGGER.logError('failed to poll values: ' + error);
+         LOGGER.logError('restarting connection because values polling failed: ' + error);
          continuePolling = false;
+         publishEmptyValues();
          connection.restart();
       }
 
@@ -109,12 +122,14 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
 
    var onConnectionClosed = function onConnectionClosed() {
       if (pendingPollTask !== undefined) {
+         LOGGER.logInfo('canceling pending polling task because connection got closed');
          var pendingPollTaskToClear = pendingPollTask;
          pendingPollTask            = undefined;
          clearTimeout(pendingPollTaskToClear);
       }
    };
 
+   publishEmptyValues();
    connection.onConnectionOpened(pollData);
    connection.onConnectionClosed(onConnectionClosed);
    connection.open();

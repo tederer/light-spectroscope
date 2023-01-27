@@ -34,8 +34,8 @@ var startup = async function startup() {
       var busBridge  = new common.infrastructure.busbridge.ServerSocketIoBusBridge(bus, topicsToTransmit, io);
    });
 
-   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_STATE,  data => LOGGER.logInfo(JSON.stringify(data)));
-   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_VALUES, data => LOGGER.logInfo(JSON.stringify(data)));
+   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_STATE,  data => LOGGER.logInfo('state=' + JSON.stringify(data)));
+   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_VALUES, data => LOGGER.logInfo('values=' + JSON.stringify(data)));
    new spectroscope.Sensor('com5', bus);
 };
 
