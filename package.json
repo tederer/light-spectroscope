@@ -24,6 +24,7 @@
       "mocha": "10.x",
       "expect.js": "0.x",
       "grunt-contrib-clean": "2.x",
+      "grunt-contrib-concat": "2.x",
       "grunt-contrib-jshint": "3.x",
       "grunt-mocha-test": "0.x"
    },

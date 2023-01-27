@@ -5,11 +5,9 @@ require('./common/webserver/Webserver.js');
 require('./common/MainInitializer.js');
 require('./common/infrastructure/bus/Bus.js');
 require('./common/infrastructure/busbridge/ServerSocketIoBusBridge.js');
-require('./common/logging/LoggingSystem.js');
 require('./SharedTopics.js');
 require('./Sensor.js');
-
-var app = require('express')();
+require('./StaticWebContent.js');
 
 const DEFAULT_PORT = 80;
 const PATH_PREFIX  = '';
@@ -18,7 +16,7 @@ const LOGGER = common.logging.LoggingSystem.createLogger('Main');
    
 var startup = async function startup() {
    var bus              = new common.infrastructure.bus.Bus();
-   var topicsToTransmit = [];
+   var topicsToTransmit = [spectroscope.shared.topics.SENSOR_STATE, spectroscope.shared.topics.SENSOR_VALUES];
       
    const webserverSettings = {
       port:                      process.env.WEBSERVER_PORT ?? DEFAULT_PORT,
@@ -28,14 +26,17 @@ var startup = async function startup() {
       info:                      common.MainInitializer.initialize(PATH_PREFIX)
    };
    
-   common.webserver.Webserver(webserverSettings, app => {
-      var server     = require('http').Server(app);
-      var io         = require('socket.io')(server);
-      var busBridge  = new common.infrastructure.busbridge.ServerSocketIoBusBridge(bus, topicsToTransmit, io);
+   var webserver = new common.webserver.Webserver(webserverSettings, app => {
+      new spectroscope.StaticWebContent(app, PATH_PREFIX);
    });
 
-   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_STATE,  data => LOGGER.logInfo('state=' + JSON.stringify(data)));
-   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_VALUES, data => LOGGER.logInfo('values=' + JSON.stringify(data)));
+   const { Server } = require('socket.io');
+   const io         = new Server(webserver.getHttpServer());
+   
+   new common.infrastructure.busbridge.ServerSocketIoBusBridge(bus, topicsToTransmit, io);
+   
+   //bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_STATE,  data => LOGGER.logInfo('state=' + JSON.stringify(data)));
+   //bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_VALUES, data => LOGGER.logInfo('values=' + JSON.stringify(data)));
    new spectroscope.Sensor('com5', bus);
 };
 

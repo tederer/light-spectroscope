@@ -171,7 +171,7 @@ describe('BusBridge', function() {
       var capturedPublishedDataCountAfterConnect = mockedBus.capturedPublishedData.get(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC).length;
       
       expect(capturedPublishedDataCountAfterConnect - capturedPublishedDataCountBeforeConnect).to.be.eql(1);
-      expect(mockedBus.capturedPublishedData.get(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC)[capturedPublishedDataCountAfterConnect - 1]).to.be.eql('true');
+      expect(mockedBus.capturedPublishedData.get(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC)[capturedPublishedDataCountAfterConnect - 1]).to.be.eql(true);
    });
    
    it('when the connection gets into disconnected state, then false gets published on the CONNECTION_STATE_TOPIC', function() {
@@ -182,7 +182,7 @@ describe('BusBridge', function() {
       var capturedPublishedDataCountAfterConnect = mockedBus.capturedPublishedData.get(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC).length;
       
       expect(capturedPublishedDataCountAfterConnect - capturedPublishedDataCountBeforeConnect).to.be.eql(1);
-      expect(mockedBus.capturedPublishedData.get(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC)[capturedPublishedDataCountAfterConnect - 1]).to.be.eql('false');
+      expect(mockedBus.capturedPublishedData.get(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC)[capturedPublishedDataCountAfterConnect - 1]).to.be.eql(false);
    });
    
    it('a publication, which is in the list of topics to transmit, gets transmitted to the other bus', function() {

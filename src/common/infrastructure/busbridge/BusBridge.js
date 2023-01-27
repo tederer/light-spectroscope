@@ -29,11 +29,11 @@ common.infrastructure.busbridge.CONNECTION_STATE_TOPIC = 'busbridge.connected';
 common.infrastructure.busbridge.BusBridge = function BusBridge(bus, topicsToTransmit, connectionFactoryFunction) {
 
    var onConnectCallback = function onConnectCallback() {
-      bus.publish(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC, 'true');
+      bus.publish(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC, true);
    };
    
    var onDisconnectCallback = function onDisconnectCallback() {
-      bus.publish(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC, 'false');
+      bus.publish(common.infrastructure.busbridge.CONNECTION_STATE_TOPIC, false);
    };
    
    var onMessageCallback = function onMessageCallback(message) {

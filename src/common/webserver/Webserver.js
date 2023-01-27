@@ -34,6 +34,7 @@ common.webserver.Webserver = function Webserver(settings, initializationFunction
    var openApiYamlUrlPath        = settings.pathPrefix + '/' + openApiYamlFilename;
    var swaggerInitScriptPath     = __dirname + '/' + swaggerClientInitScript;
    var swaggerInitScriptContent;
+   var httpServer;
 
    try {
       swaggerInitScriptContent = fs.readFileSync(swaggerInitScriptPath, 'utf8').replace('${url}', openApiYamlUrlPath);
@@ -77,7 +78,11 @@ common.webserver.Webserver = function Webserver(settings, initializationFunction
 
    initializationFunction(app);
    
-   app.listen(settings.port, () => {
+   httpServer = app.listen(settings.port, () => {
       LOGGER.logInfo('web server listening on port ' + settings.port);
    });
+
+   this.getHttpServer = function getHttpServer() {
+      return httpServer;
+   };
 };
