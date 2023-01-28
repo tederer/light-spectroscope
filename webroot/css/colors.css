@@ -1,0 +1,17 @@
+#tableViewTab #values .color_410nm { background-color: #8700FA; }
+#tableViewTab #values .color_435nm { background-color: #4517FE; }
+#tableViewTab #values .color_460nm { background-color: #0274FB; }
+#tableViewTab #values .color_485nm { background-color: #00ABF3; }
+#tableViewTab #values .color_510nm { background-color: #00E063; }
+#tableViewTab #values .color_535nm { background-color: #56E13E; }
+#tableViewTab #values .color_560nm { background-color: #B2E01B; }
+#tableViewTab #values .color_585nm { background-color: #FED401; }
+#tableViewTab #values .color_610nm { background-color: #FD8D00; }
+#tableViewTab #values .color_645nm { background-color: #FF5E01; }
+#tableViewTab #values .color_680nm { background-color: #FD3000; }
+#tableViewTab #values .color_705nm { background-color: #F01801; }
+#tableViewTab #values .color_730nm { background-color: #D11000; }
+#tableViewTab #values .color_760nm { background-color: #A80603; }
+
+.okState { background-color: green; }
+.errorState { background-color: red; }
