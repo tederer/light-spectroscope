@@ -28,14 +28,12 @@
 
       $(document).ready(function() {
          
-         var bus = new common.infrastructure.bus.Bus();
-         bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_STATE,  data => console.log('state=' + JSON.stringify(data)));
-         bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_VALUES, data => console.log('values=' + JSON.stringify(data)));
-   
+         var bus              = new common.infrastructure.bus.Bus();
          var topicsToTransmit = [];
-         var busBridge = new common.infrastructure.busbridge.ClientSocketIoBusBridge(bus, topicsToTransmit, io);
+         var busBridge        = new common.infrastructure.busbridge.ClientSocketIoBusBridge(bus, topicsToTransmit, io);
 
          new spectroscope.client.ConnectionState(bus);
+         new spectroscope.client.TableViewTab(bus);
 
          $('#navbarTogglerDemo01 a').click(showTab);
       });
@@ -43,7 +41,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+<nav class="navbar navbar-expand-lg navbar-dark bg-success p-2">
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -52,10 +50,10 @@
    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
          <li class="nav-item">
-         <a class="nav-link" id="rawValues">raw values</a>
+         <a class="nav-link" id="tableView">table view</a>
          </li>
          <li class="nav-item">
-         <a class="nav-link" id="calibratedValues">calibrated values</a>
+         <a class="nav-link" id="info">info</a>
          </li>
       </ul>
    </div>
@@ -65,13 +63,14 @@
    <h5 class="text-center" id="message"></h5>
 </div>
 
-<div id="calibratedValuesTab" class="container mt-2">
-   <h5 class="text-center">calibrated values</h5>
+
+<div id="tableViewTab" class="container mt-2">
+   <h5 class="text-center">table view</h5>
    <div id="values"></div>
 </div>
 
-<div id="rawValuesTab" class="container mt-2 d-none">
-   <h5 class="text-center">raw values</h5>
+<div id="infoTab" class="container d-none mt-2">
+   <h5 class="text-center">info</h5>
    <div id="values"></div>
 </div>
 

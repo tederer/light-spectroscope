@@ -6,13 +6,25 @@ spectroscope.client.ConnectionState = function ConnectionState(bus) {
 
    var sensorConnectedToService = false;
    var webSocketConnected       = false;
+   var overallConnected         = false;
+   var lastPublishedOverallConnected;
+
+   var publishOverallState = function publishOverallState() {
+      if (lastPublishedOverallConnected !== overallConnected) {
+         bus.publish(spectroscope.client.topics.CONNECTED, overallConnected);
+         lastPublishedOverallConnected = overallConnected;
+      }
+   };
 
    var setMessage = function setMessage(msg) {
       $('#connectionState #message').text(msg);
    };
 
    var updateUi = function updateUi() {
-      if (sensorConnectedToService && webSocketConnected) {
+      overallConnected = sensorConnectedToService && webSocketConnected;
+      publishOverallState();
+
+      if (overallConnected) {
          $('#connectionState').addClass('d-none');
          setMessage('');
       } else {
