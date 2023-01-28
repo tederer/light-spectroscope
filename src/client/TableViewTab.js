@@ -14,7 +14,7 @@ spectroscope.client.TableViewTab = function TableViewTab(bus) {
    var waveLengthNames;
 
    var createTable = function createTable(waveLengthNames) {
-      var content = '<table class="table table-dark table-striped"><thead></thead><th>wave length</th><th>calibrated</th><th>raw</th><tbody>';
+      var content = '<table class="table table-dark table-striped"><thead><th>wave length</th><th>calibrated</th><th>raw</th></thead><tbody>';
       waveLengthNames.forEach(name => {
          var formattedRowName = name.replace(/(\d+)/, '$1 ');
          content +=  '<tr class="table-light">' +
