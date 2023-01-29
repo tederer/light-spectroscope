@@ -125,6 +125,7 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    };
 
    this.restart = function restart() {
+      LOGGER.logInfo('restarting connection');
       if (lineReader !== undefined) {
          var lineReaderToClose = lineReader;
          lineReader            = undefined;
@@ -143,7 +144,7 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       
       serialPort.on('open', async () => {
          LOGGER.logInfo('connection opened');
-         lineReader     = readlinePromises.createInterface({ input: serialPort, output: serialPort });
+         lineReader = readlinePromises.createInterface({ input: serialPort, output: serialPort });
          
          try {
             await initialize();
