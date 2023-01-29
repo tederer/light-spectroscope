@@ -110,7 +110,6 @@ spectroscope.client.TableViewTab = function TableViewTab(bus) {
       }, 1000);
    };
 
-
    var copyDataToClipboard = function copyDataToClipboard() {
       if ((copyToClipboardTask === undefined) && (waveLengthNames !== undefined) && (sensorValues !== undefined)) {
          var text    = (new Date()).toISOString() + '\ncalibrated values:\n';
