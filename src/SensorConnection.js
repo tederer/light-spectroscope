@@ -1,4 +1,4 @@
-/* global assertNamespace, common, setTimeout, spectroscope, AbortSignal */
+/* global assertNamespace, common, setTimeout, spectroscope, AbortSignal, __dirname */
 
 require('./common/NamespaceUtils.js');
 require('./common/logging/LoggingSystem.js');
@@ -26,7 +26,8 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
 
    const { SerialPort }         = require('serialport');
    const readlinePromises       = require('node:readline/promises');
-   
+   const fs                     = require('fs');
+
    var LOGGER = common.logging.LoggingSystem.createLogger('SensorConnection');
    
    var lineReader;
@@ -34,6 +35,7 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    var closedCallback;
    var thisInstance   = this;
    var lastPublishedState;
+   var serviceVersion;
 
    this.sendCommand = async function sendCommand(command) {
       if (lineReader === undefined) {
@@ -71,7 +73,8 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       publishState({
          versions: {
             software: softwareVersion, 
-            hardware: hardwareVersion
+            hardware: hardwareVersion,
+            service:  serviceVersion
          },
          connected: true
       });
@@ -177,6 +180,14 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    this.onConnectionClosed = function onConnectionClosed(callback) {
       closedCallback = callback;
    };
+
+   try {
+      var fileContent = fs.readFileSync(__dirname + '/../package.json', 'utf8');
+      var packageJson = JSON.parse(fileContent);
+      serviceVersion  = packageJson.version;
+   } catch(e) {
+      throw 'failed to evaluate service version: ' + e;
+   }
 
    publishDisconnectedState();
 };

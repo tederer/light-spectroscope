@@ -15,8 +15,9 @@ spectroscope.client.InfoTab = function InfoTab(bus) {
 
    var createTable = function createTable() {
       var content = '<table class="table table-dark table-striped"><thead></thead><tbody>';
-      content += '<tr class="table-light"><td>software version</td><td id="softwareVersion"></tr>';
-      content += '<tr class="table-light"><td>hardware version</td><td id="hardwareVersion"></tr>';
+      content += '<tr class="table-light"><td>service version</td><td id="serviceVersion"></tr>';
+      content += '<tr class="table-light"><td>sensor software version</td><td id="softwareVersion"></tr>';
+      content += '<tr class="table-light"><td>sensor hardware version</td><td id="hardwareVersion"></tr>';
       SENSOR_CHIP_NAMES.forEach(chipName => {
          content += '<tr class="table-light"><td>temperature ' + chipName + '</td>' +
                     '<td id="' + TEMPERATURE_PREFIX + chipName +'"></tr>';
@@ -41,7 +42,8 @@ spectroscope.client.InfoTab = function InfoTab(bus) {
             tableInitialized = true;
             createTable();
          }
-
+         
+         $(CSS_SELECTOR + ' #serviceVersion').text(sensorState.versions.service);
          $(CSS_SELECTOR + ' #softwareVersion').text(sensorState.versions.software);
          $(CSS_SELECTOR + ' #hardwareVersion').text(sensorState.versions.hardware);
       }
