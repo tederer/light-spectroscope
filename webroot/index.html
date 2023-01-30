@@ -79,7 +79,21 @@
          <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
       </svg>
    </h5>
-   <canvas id="chartCanvas"></canvas>
+   <div class="container text-center">
+      <div class="row">
+         <div class="col"></div>
+         <div class="col-auto">
+            <select class="form-select" id="valuesTypeToDisplay">
+               <option value="calibratedValues" selected>calibrated values</option>
+               <option value="rawValues">raw values</option>
+            </select>
+         </div>
+         <div class="col"></div>
+      </div>
+   </div>
+   <div class="container" style="position: relative; width: 80vw; height: 60vh">
+      <canvas id="chartCanvas"></canvas>
+   </div>
 </div>
 
 <div id="tableViewTab" class="container d-none mt-2">

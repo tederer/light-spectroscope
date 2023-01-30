@@ -1,10 +1,12 @@
-/* global spectroscope, assertNamespace, common, Chart, setTimeout, navigator */
+/* global spectroscope, assertNamespace, common, Chart, setTimeout, navigator, clearTimeout, window */
 
 assertNamespace('spectroscope.client');
 
 spectroscope.client.ChartTab = function ChartTab(bus) {
 
    const CART_CANVAS_CSS_SELECTOR = '#chartTab #chartCanvas';
+   const VALUE_TYPE_CSS_SELECTOR  = '#chartTab #valuesTypeToDisplay';
+
    const BACKGROUND_COLORS        = {
       '410nm': '#8700FA',
       '435nm': '#4517FE',
@@ -23,7 +25,8 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
    };
 
    var chart;
-   
+   var dataTypeToDisplay;
+
    var getLabels = function getLabels(sensorValues, waveLengthNames) {
       if (sensorValues === undefined) {
          return [];
@@ -35,11 +38,11 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
    var getDatasetData = function getDatasetData(sensorValues, waveLengthNames) {
       var data = [];
 
-      if (sensorValues === undefined) {
+      if ((sensorValues === undefined) || (dataTypeToDisplay === undefined)) {
          return data;
       }
 
-      waveLengthNames.forEach(waveLengthName => data.push(sensorValues.calibratedValues.values[waveLengthName]));
+      waveLengthNames.forEach(waveLengthName => data.push(sensorValues[dataTypeToDisplay].values[waveLengthName]));
 
       return data;
    };
@@ -68,6 +71,7 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
             }],
          },
          options: {
+            maintainAspectRatio: false,
             scales: {
                x: {
                   ticks: {
@@ -96,7 +100,15 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
    
    };
 
+   var updateDateTypeToDisplay = function updateDateTypeToDisplay() {
+      dataTypeToDisplay = $(VALUE_TYPE_CSS_SELECTOR + ' :selected').val();
+   };
+
    var showSensorValues = function showSensorValues(sensorValues, waveLengthNames) {
+      if (dataTypeToDisplay === undefined) {
+         updateDateTypeToDisplay();
+      }
+
       chart.data.labels                         = getLabels(sensorValues, waveLengthNames);
       chart.data.datasets['0'].data             = getDatasetData(sensorValues, waveLengthNames);
       chart.data.datasets['0'].backgroundColor  = getBackgroundColor(sensorValues, waveLengthNames);
@@ -112,4 +124,6 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
    };
 
    new spectroscope.client.SensorValueTab(settings);
+
+   $(VALUE_TYPE_CSS_SELECTOR).change(updateDateTypeToDisplay);
 };
