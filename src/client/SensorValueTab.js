@@ -11,7 +11,6 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
    var uiInitialized             = false;
    var unitInitialized           = false;
    var sensorValues;
-   var waveLengthNames;
    var copyToClipboardTask;
 
    var bus                       = settings.bus;
@@ -31,11 +30,14 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
       $(UNIT_CSS_SELECTOR).text('');
    };
 
+   var getWaveLengthNames = function getWaveLengthNames() {
+      return (sensorValues === undefined) ? [] : Object.keys(sensorValues.rawValues.values).sort();
+   };
+
    var updateUi = function updateUi() {
       if (!connected) {
          removeUi();
          removeUnit();
-         waveLengthNames  = undefined;
          uiInitialized    = false;
          unitInitialized  = false;
          return;
@@ -51,8 +53,8 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
             unitInitialized = true;
             setUnit(sensorValues.calibratedValues.unit);
          }
-         
-         showSensorValues(sensorValues);
+
+         showSensorValues(sensorValues, getWaveLengthNames());
       }
    };
 
@@ -91,9 +93,11 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
    };
 
    var copyDataToClipboard = function copyDataToClipboard() {
-      if ((copyToClipboardTask === undefined) && (waveLengthNames !== undefined) && (sensorValues !== undefined)) {
-         var text    = (new Date()).toISOString() + '\ncalibrated values:\n';
-         var heading = '';
+      if ((copyToClipboardTask === undefined) && (sensorValues !== undefined)) {
+         var text            = (new Date()).toISOString() + '\n\ncalibrated values:\n';
+         var waveLengthNames = getWaveLengthNames();
+         var heading         = '';
+         
          waveLengthNames.forEach(waveLengthName => {
             heading += waveLengthName + ';';
          });
@@ -101,10 +105,11 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
          waveLengthNames.forEach(waveLengthName => {
             text += sensorValues.calibratedValues.values[waveLengthName].toLocaleString() + ';';
          });
-         text += '\nraw values:\n' + heading + '\n';
+         text += '\n\nraw values:\n' + heading + '\n';
          waveLengthNames.forEach((waveLengthName, index) => {
             text += sensorValues.rawValues.values[waveLengthName].toLocaleString() + ';';
          });
+
          navigator.clipboard.writeText(text)
             .then(()  => highlightClipboardIcon(OK))
             .catch(() => highlightClipboardIcon(ERROR));

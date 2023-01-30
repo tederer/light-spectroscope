@@ -129,11 +129,13 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       if (lineReader !== undefined) {
          var lineReaderToClose = lineReader;
          lineReader            = undefined;
+         LOGGER.logInfo('closing line reader');
          lineReaderToClose.close();
       }
 
       invokeCallbackIfExists(closedCallback);
       publishDisconnectedState();
+      LOGGER.logInfo('scheduling connection reopening in ' + RESTART_DELAY_IN_MS + ' ms');
       setTimeout(thisInstance.open, RESTART_DELAY_IN_MS);   
    };
 

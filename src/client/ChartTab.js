@@ -24,40 +24,32 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
 
    var chart;
    
-   var getWaveLengthNames = function getWaveLengthNames(sensorValues) {
+   var getLabels = function getLabels(sensorValues, waveLengthNames) {
       if (sensorValues === undefined) {
          return [];
       }
 
-      return Object.keys(sensorValues.rawValues.values).sort();
+      return waveLengthNames.map(waveLength => waveLength.replace(/(\d+)/, '$1 '));
    };
 
-   var getLabels = function getLabels(sensorValues) {
-      if (sensorValues === undefined) {
-         return [];
-      }
-
-      return getWaveLengthNames(sensorValues).map(waveLength => waveLength.replace(/(\d+)/, '$1 '));
-   };
-
-   var getDatasetData = function getDatasetData(sensorValues) {
+   var getDatasetData = function getDatasetData(sensorValues, waveLengthNames) {
       var data = [];
 
       if (sensorValues === undefined) {
          return data;
       }
 
-      getWaveLengthNames(sensorValues).forEach(waveLengthName => data.push(sensorValues.calibratedValues.values[waveLengthName]));
+      waveLengthNames.forEach(waveLengthName => data.push(sensorValues.calibratedValues.values[waveLengthName]));
 
       return data;
    };
 
-   var getBackgroundColor = function getBackgroundColor(sensorValues) {
+   var getBackgroundColor = function getBackgroundColor(sensorValues, waveLengthNames) {
       if (sensorValues === undefined) {
          return [];
       }
 
-      return getWaveLengthNames(sensorValues).map(waveLengthName => BACKGROUND_COLORS[waveLengthName] ?? '#FFFFFF');
+      return waveLengthNames.map(waveLengthName => BACKGROUND_COLORS[waveLengthName] ?? '#FFFFFF');
    };
 
    var initializeUi = function initializeUi() {
@@ -104,10 +96,10 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
    
    };
 
-   var showSensorValues = function showSensorValues(sensorValues) {
-      chart.data.labels                         = getLabels(sensorValues);
-      chart.data.datasets['0'].data             = getDatasetData(sensorValues);
-      chart.data.datasets['0'].backgroundColor  = getBackgroundColor(sensorValues);
+   var showSensorValues = function showSensorValues(sensorValues, waveLengthNames) {
+      chart.data.labels                         = getLabels(sensorValues, waveLengthNames);
+      chart.data.datasets['0'].data             = getDatasetData(sensorValues, waveLengthNames);
+      chart.data.datasets['0'].backgroundColor  = getBackgroundColor(sensorValues, waveLengthNames);
       chart.update();
    };
 
