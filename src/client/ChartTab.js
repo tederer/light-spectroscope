@@ -4,12 +4,8 @@ assertNamespace('spectroscope.client');
 
 spectroscope.client.ChartTab = function ChartTab(bus) {
 
-   const CSS_SELECTOR           = '#chartTab #chartCanvas';
-   const UNIT_CSS_SELECTOR      = '#chartTab #unit';
-   const CLIPBOARD_CSS_SELECTOR = '#chartTab #copyToClipboardIcon';
-   const OK                     = 'okState';
-   const ERROR                  = 'errorState';
-   const BACKGROUND_COLORS      = {
+   const CART_CANVAS_CSS_SELECTOR = '#chartTab #chartCanvas';
+   const BACKGROUND_COLORS        = {
       '410nm': '#8700FA',
       '435nm': '#4517FE',
       '460nm': '#0274FB',
@@ -26,21 +22,9 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
       '760nm': '#A80603'
    };
 
-   var connected        = false;
-   var unitInitialized  = false;
    var chart;
-   var sensorValues;
-   var copyToClipboardTask;
-
-   var setUnit = function setUnit(unit) {
-      $(UNIT_CSS_SELECTOR).text(' (in ' + unit + ')');
-   };
-
-   var removeUnit = function removeUnit() {
-      $(UNIT_CSS_SELECTOR).text('');
-   };
-
-   var getWaveLengthNames = function getWaveLengthNames() {
+   
+   var getWaveLengthNames = function getWaveLengthNames(sensorValues) {
       if (sensorValues === undefined) {
          return [];
       }
@@ -48,35 +32,39 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
       return Object.keys(sensorValues.rawValues.values).sort();
    };
 
-   var getLabels = function getLabels() {
+   var getLabels = function getLabels(sensorValues) {
       if (sensorValues === undefined) {
          return [];
       }
 
-      return getWaveLengthNames().map(waveLength => waveLength.replace(/(\d+)/, '$1 '));
+      return getWaveLengthNames(sensorValues).map(waveLength => waveLength.replace(/(\d+)/, '$1 '));
    };
 
-   var getDatasetData = function getDatasetData() {
+   var getDatasetData = function getDatasetData(sensorValues) {
       var data = [];
 
       if (sensorValues === undefined) {
          return data;
       }
 
-      getWaveLengthNames().forEach(waveLengthName => data.push(sensorValues.calibratedValues.values[waveLengthName]));
+      getWaveLengthNames(sensorValues).forEach(waveLengthName => data.push(sensorValues.calibratedValues.values[waveLengthName]));
 
       return data;
    };
 
-   var getBackgroundColor = function getBackgroundColor() {
+   var getBackgroundColor = function getBackgroundColor(sensorValues) {
       if (sensorValues === undefined) {
          return [];
       }
 
-      return getWaveLengthNames().map(waveLengthName => BACKGROUND_COLORS[waveLengthName] ?? '#FFFFFF');
+      return getWaveLengthNames(sensorValues).map(waveLengthName => BACKGROUND_COLORS[waveLengthName] ?? '#FFFFFF');
    };
 
-   var initializeChart = function initializeChart() {
+   var initializeUi = function initializeUi() {
+      if (chart !== undefined) {
+         return;
+      }
+      
       var chartConfig = {
          type: 'bar',
          data: {
@@ -105,93 +93,31 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
          }
       };
      
-      chart = new Chart($(CSS_SELECTOR), chartConfig);   
+      chart = new Chart($(CART_CANVAS_CSS_SELECTOR), chartConfig);   
    };
 
-   var updateUi = function updateUi() {
-      if (chart === undefined) {
-         initializeChart();
-      }
-      
-      if (!connected) {
-         removeUnit();
-         unitInitialized = false;
-         return;
-      }
-      
-      if (connected && (sensorValues !== undefined) && !unitInitialized) {
-         unitInitialized = true;
-         setUnit(sensorValues.calibratedValues.unit);
-      }
+   var clearChartContent = function clearChartContent() {
+      chart.data.labels                         = [];
+      chart.data.datasets['0'].data             = [];
+      chart.data.datasets['0'].backgroundColor  = [];
+      chart.update();
+   
+   };
 
-      chart.data.labels                         = getLabels();
-      chart.data.datasets['0'].data             = getDatasetData();
-      chart.data.datasets['0'].backgroundColor  = getBackgroundColor();
+   var showSensorValues = function showSensorValues(sensorValues) {
+      chart.data.labels                         = getLabels(sensorValues);
+      chart.data.datasets['0'].data             = getDatasetData(sensorValues);
+      chart.data.datasets['0'].backgroundColor  = getBackgroundColor(sensorValues);
       chart.update();
    };
 
-   var validSensorValues = function validSensorValues(values) {
-      return   (typeof values === 'object') &&
-               (typeof values.timestamp === 'number') &&
-               (typeof values.rawValues === 'object') &&
-               (typeof values.calibratedValues === 'object') &&
-               (typeof values.temperatures === 'object') &&
-               (values.rawValues.length === values.calibratedValues.length);
+   var settings = {
+      bus:              bus,             
+      tabId:            'chartTab',     
+      initializeUi:     initializeUi,    
+      removeUi:         clearChartContent,
+      showSensorValues: showSensorValues
    };
 
-   var onConnected = function onConnected(connectedState) {
-      if (connected !== connectedState) {
-         connected = connectedState;
-         if (!connected) {
-            sensorValues    = undefined;
-            unitInitialized = false;
-         }
-         updateUi();
-      }
-   };
-
-   var onSensorValuesReceived = function onSensorValuesReceived(values) {
-      if (validSensorValues(values) && (((sensorValues ?? {}).timestamp ?? 0) < values.timestamp)) {
-         sensorValues = values;
-         updateUi();
-      }
-   };
-   
-   var highlightClipboardIcon = function highlightClipboardIcon(cssClassToUse) {
-      $(CLIPBOARD_CSS_SELECTOR).addClass(cssClassToUse);
-      copyToClipboardTask = setTimeout(() => {
-         $(CLIPBOARD_CSS_SELECTOR).removeClass(cssClassToUse);
-         copyToClipboardTask = undefined;
-      }, 1000);
-   };
-
-   var copyDataToClipboard = function copyDataToClipboard() {
-      chart.update(); // TODO remove me
-      if ((copyToClipboardTask === undefined) && (sensorValues !== undefined)) {
-         var text            = (new Date()).toISOString() + '\ncalibrated values:\n';
-         var waveLengthNames = getWaveLengthNames();
-         var heading         = '';
-
-         waveLengthNames.forEach(waveLengthName => {
-            heading += waveLengthName + ';';
-         });
-         text += heading + '\n';
-         waveLengthNames.forEach(waveLengthName => {
-            text += sensorValues.calibratedValues.values[waveLengthName] + ';';
-         });
-         text += '\nraw values:\n' + heading + '\n';
-         waveLengthNames.forEach((waveLengthName, index) => {
-            text += sensorValues.rawValues.values[waveLengthName] + ';';
-         });
-
-         navigator.clipboard.writeText(text)
-            .then(()  => highlightClipboardIcon(OK))
-            .catch(() => highlightClipboardIcon(ERROR));
-      }
-   };
-
-   bus.subscribeToPublication(spectroscope.client.topics.CONNECTED, onConnected);
-   bus.subscribeToPublication(spectroscope.shared.topics.SENSOR_VALUES, onSensorValuesReceived);
-   
-   $(CLIPBOARD_CSS_SELECTOR).click(copyDataToClipboard);
+   new spectroscope.client.SensorValueTab(settings);
 };
