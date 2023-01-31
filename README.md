@@ -60,8 +60,11 @@ To start the service, the following steps need to get executed.
 
 ## References
 
+* [AS7265x datasheet](doc/AS7265x_Datasheet.pdf)
 * [Spectral Triad (AS7265x) Hookup Guide ](https://learn.sparkfun.com/tutorials/spectral-triad-as7265x-hookup-guide)
-* [Prometheus text based exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/)
 * [About SerialPort | Node SerialPort](https://serialport.io/docs/)
 * [Node.js (stream documentation)](https://nodejs.org/api/stream.html#stream)
 * [Node.js (line based stream reading)](https://nodejs.org/api/readline.html#readline)
+* [Prometheus text based exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/)
+* [Prometheus metric and label naming](https://prometheus.io/docs/practices/naming/)
+* [Prometheus data model](https://prometheus.io/docs/concepts/data_model/)

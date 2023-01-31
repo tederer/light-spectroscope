@@ -4,6 +4,7 @@ require('./common/NamespaceUtils.js');
 require('./common/logging/LoggingSystem.js');
 require('./SharedTopics.js');
 require('./SensorConnection.js');
+
 assertNamespace('spectroscope');
 
 /**

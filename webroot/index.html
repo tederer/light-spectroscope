@@ -13,16 +13,21 @@
    <script src="javascripts/lightSpectroscope.js"></script>
    <script>
       var showTab = function showTab(event) {
-         var idOfTabToShow = event.target.id + 'Tab';
-         var tabs = $('body > div');
+         var targetId = event.target.id;
 
-         for(var i = 0; i < tabs.length; i++) {
-            var tab = tabs[i];
-            if (tab.id.endsWith('Tab')) {
-               if(tab.id === idOfTabToShow) {
-                  $(tab).removeClass('d-none');
-               } else {
-                  $(tab).addClass('d-none');
+         if (targetId === 'prometheus') {
+            window.open('/metrics', '_blank');
+         } else {
+            var tabs = $('body > div');
+
+            for(var i = 0; i < tabs.length; i++) {
+               var tab = tabs[i];
+               if (tab.id.endsWith('Tab')) {
+                  if(tab.id === targetId + 'Tab') {
+                     $(tab).removeClass('d-none');
+                  } else {
+                     $(tab).addClass('d-none');
+                  }
                }
             }
          }
@@ -60,6 +65,9 @@
          </li>
          <li class="nav-item">
             <a class="nav-link" id="tableView">table view</a>
+         </li>
+         <li class="nav-item">
+            <a class="nav-link" id="prometheus">prometheus metrics</a>
          </li>
          <li class="nav-item">
             <a class="nav-link" id="info">info</a>
