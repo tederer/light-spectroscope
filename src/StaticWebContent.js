@@ -12,15 +12,13 @@ assertNamespace('spectroscope');
  * app    application instance of express
  * bus    instance of common.infrastructure.bus.Bus
  */
- spectroscope.StaticWebContent = function StaticWebContent(app, PATH_PREFIX) {
+ spectroscope.StaticWebContent = function StaticWebContent(app, PATH_PREFIX, WEB_ROOT_FOLDER) {
 
    const fs                  = require('fs');
-   const path                = require('node:path');
    
    const LOGGER              = common.logging.LoggingSystem.createLogger('StaticWebContent');
    const DEFAULT_INDEX_FILE  = 'index.html';
-   const WEB_ROOT_FOLDER     = path.resolve(path.dirname(process.argv[1]), '..') + '/webroot';
-
+   
    var sendInternalServerError = function sendInternalServerError(response, text) {
       response.writeHeader(500, {'Content-Type': 'text/plain'});  
       response.write(text);  

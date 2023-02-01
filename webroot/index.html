@@ -13,11 +13,20 @@
    <script src="javascripts/lightSpectroscope.js"></script>
    <script>
       var showTab = function showTab(event) {
-         var targetId = event.target.id;
+         var targetId     = event.target.id;
+         var windowOpened = false;
 
          if (targetId === 'prometheus') {
             window.open('/metrics', '_blank');
-         } else {
+            windowOpened = true;
+         } 
+         
+         if (targetId === 'swagger') {
+            window.open('/swagger', '_blank');
+            windowOpened = true;
+         } 
+                  
+         if (!windowOpened) {
             var tabs = $('body > div');
 
             for(var i = 0; i < tabs.length; i++) {
@@ -68,6 +77,9 @@
          </li>
          <li class="nav-item">
             <a class="nav-link" id="prometheus">prometheus metrics</a>
+         </li>
+         <li class="nav-item">
+            <a class="nav-link" id="swagger">Swagger UI</a>
          </li>
          <li class="nav-item">
             <a class="nav-link" id="info">info</a>

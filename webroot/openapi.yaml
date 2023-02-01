@@ -1,0 +1,183 @@
+openapi: 3.0.3
+info:
+  title: Light spectroscope
+  description: |-
+    This service provides access to the measured values of the light spectroscope.
+  version: 0.1.0
+paths:
+  /api/sensorvalues/calibrated:
+    get:
+      summary: calibrated values getter
+      description: Returns an object containing the current calibrated values.
+      operationId: getCalibratedValues
+            
+      responses:
+        '200':
+          description: An object containing the measured values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: number
+                    example: 1675274821494
+                  values:
+                    type: object
+                    properties:
+                      410nm:
+                        type: number
+                        example: 1.0
+                      435nm:
+                        type: number
+                        example: 0.0
+                      460nm:
+                        type: number
+                        example: 0.0
+                      485nm:
+                        type: number
+                        example: 1.2
+                      510nm:
+                        type: number
+                        example: 7.0
+                      535nm:
+                        type: number
+                        example: 0.0
+                      560nm:
+                        type: number
+                        example: 0.1
+                      585nm:
+                        type: number
+                        example: 1.0
+                      610nm:
+                        type: number
+                        example: 1.0
+                      645nm:
+                        type: number
+                        example: 2.0
+                      680nm:
+                        type: number
+                        example: 1.2
+                      705nm:
+                        type: number
+                        example: 1.3
+                      730nm:
+                        type: number
+                        example: 0.0
+                      760nm:
+                        type: number
+                        example: 1.0
+                      810nm:
+                        type: number
+                        example: 1.0
+                      860nm:
+                        type: number
+                        example: 3.1
+                      900nm:
+                        type: number
+                        example: 1.1
+                      940nm:
+                        type: number
+                        example: 0.1
+        '404': 
+          description: currently no data available 
+
+  /api/sensorvalues/raw:
+    get:
+      summary: raw values getter
+      description: Returns an object containing the current raw values.
+      operationId: getRawValues
+            
+      responses:
+        '200':
+          description: An object containing the measured values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: number
+                    example: 1675274821494
+                  values:
+                    type: object
+                    properties:
+                      410nm:
+                        type: number
+                        example: 1
+                      435nm:
+                        type: number
+                        example: 0
+                      460nm:
+                        type: number
+                        example: 0
+                      485nm:
+                        type: number
+                        example: 1
+                      510nm:
+                        type: number
+                        example: 7
+                      535nm:
+                        type: number
+                        example: 0
+                      560nm:
+                        type: number
+                        example: 0
+                      585nm:
+                        type: number
+                        example: 1
+                      610nm:
+                        type: number
+                        example: 1
+                      645nm:
+                        type: number
+                        example: 2
+                      680nm:
+                        type: number
+                        example: 1
+                      705nm:
+                        type: number
+                        example: 1
+                      730nm:
+                        type: number
+                        example: 0
+                      760nm:
+                        type: number
+                        example: 1
+                      810nm:
+                        type: number
+                        example: 1
+                      860nm:
+                        type: number
+                        example: 3
+                      900nm:
+                        type: number
+                        example: 1
+                      940nm:
+                        type: number
+                        example: 0
+        '404': 
+          description: currently no data available 
+  /info:
+    get:
+      summary: info getter
+      description: Returns an object containing the version of the service and its start time.
+      operationId: getInfo
+            
+      responses:
+        '200':
+          description: An object containing the version of the service and its start time.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: '1.0.0'
+                  pathPrefix:
+                    type: string
+                    example: ''
+                  start:
+                    type: string
+                    example: '2022-11-28T18:21:34.846Z'

@@ -1,15 +1,15 @@
 /* global assertNamespace, common, spectroscope, setTimeout, clearTimeout */
 
-require('./common/NamespaceUtils.js');
-require('./common/logging/LoggingSystem.js');
-require('./SharedTopics.js');
+require('../common/NamespaceUtils.js');
+require('../common/logging/LoggingSystem.js');
+require('../SharedTopics.js');
 
 assertNamespace('spectroscope');
 
 /**
  * constructor function of the Prometheus interface.
  * 
- * bus               instance of common.infrastructure.bus.Bus
+ * bus    instance of common.infrastructure.bus.Bus
  */
 spectroscope.PrometheusInterface = function PrometheusInterface(app, PATH_PREFIX, bus) {
 
@@ -22,10 +22,6 @@ spectroscope.PrometheusInterface = function PrometheusInterface(app, PATH_PREFIX
    var LOGGER = common.logging.LoggingSystem.createLogger('PrometheusInterface');
    
    var responseContent;
-
-   var nowInMs = function nowInMs() {
-      return Date.now();
-   };
 
    var validSensorValues = function validSensorValues(values) {
       return   (typeof values                   === 'object') &&
@@ -58,12 +54,11 @@ spectroscope.PrometheusInterface = function PrometheusInterface(app, PATH_PREFIX
    var onSensorValuesReceived = function onSensorValuesReceived(values) {
       if (validSensorValues(values)) {
          responseContent = '';
-         var timestamp   = nowInMs();
-
+         
          DATATYPES.forEach((type, index) => {
             getWaveLengthNames(values).forEach(waveLengthName => {
                var value = values[type + 'Values'].values[waveLengthName];
-               responseContent += createMetric(waveLengthName, type, value, timestamp);
+               responseContent += createMetric(waveLengthName, type, value, values.timestamp);
             });
             if (index === 0) {
                responseContent += '\n';

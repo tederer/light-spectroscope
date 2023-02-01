@@ -7,15 +7,20 @@ require('./common/infrastructure/busbridge/ServerSocketIoBusBridge.js');
 require('./SharedTopics.js');
 require('./Sensor.js');
 require('./StaticWebContent.js');
-require('./PrometheusInterface.js');
-
-const DEFAULT_PORT = 80;
-const PATH_PREFIX  = '';
+require('./interfaces/PrometheusInterface.js');
+require('./interfaces/RestInterface.js');
+require('./swagger/SwaggerUI.js');
 
 var startup = async function startup() {
-   var bus              = new common.infrastructure.bus.Bus();
-   var topicsToTransmit = [spectroscope.shared.topics.SENSOR_STATE, spectroscope.shared.topics.SENSOR_VALUES];
-      
+
+   const DEFAULT_PORT = 80;
+   const PATH_PREFIX  = '';
+   
+   const path             = require('node:path');
+   const bus              = new common.infrastructure.bus.Bus();
+   const topicsToTransmit = [spectroscope.shared.topics.SENSOR_STATE, spectroscope.shared.topics.SENSOR_VALUES];
+   const WEB_ROOT_FOLDER  = path.resolve(path.dirname(process.argv[1]), '..') + '/webroot';
+   
    const webserverSettings = {
       port:                      process.env.WEBSERVER_PORT ?? DEFAULT_PORT,
       pathPrefix:                PATH_PREFIX, 
@@ -26,7 +31,9 @@ var startup = async function startup() {
    
    var webserver = new common.webserver.Webserver(webserverSettings, app => {
       new spectroscope.PrometheusInterface(app, PATH_PREFIX, bus);
-      new spectroscope.StaticWebContent(app, PATH_PREFIX);
+      new spectroscope.RestInterface(app, PATH_PREFIX, bus);
+      new spectroscope.SwaggerUI(app, PATH_PREFIX, WEB_ROOT_FOLDER);
+      new spectroscope.StaticWebContent(app, PATH_PREFIX, WEB_ROOT_FOLDER);
    });
 
    const { Server } = require('socket.io');
