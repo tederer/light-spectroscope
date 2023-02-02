@@ -1,19 +1,236 @@
 openapi: 3.0.3
 info:
-  title: light spectroscope service
+  title: Light spectroscope
   description: |-
-    This service provides access to the light spectroscope service.
+    This service provides access to the measured values of the light spectroscope.
   version: 0.1.0
 paths:
+  /sensor/values/calibrated:
+    get:
+      summary: calibrated values getter
+      description: Returns an object containing the current calibrated values.
+      operationId: getCalibratedValues
+            
+      responses:
+        '200':
+          description: An object containing the measured values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: number
+                    example: 1675274821494
+                  unit:
+                    type: string
+                    example: 'µW/cm²'
+                  values:
+                    type: object
+                    properties:
+                      410nm:
+                        type: number
+                        example: 1.0
+                      435nm:
+                        type: number
+                        example: 0.0
+                      460nm:
+                        type: number
+                        example: 0.0
+                      485nm:
+                        type: number
+                        example: 1.2
+                      510nm:
+                        type: number
+                        example: 7.0
+                      535nm:
+                        type: number
+                        example: 0.0
+                      560nm:
+                        type: number
+                        example: 0.1
+                      585nm:
+                        type: number
+                        example: 1.0
+                      610nm:
+                        type: number
+                        example: 1.0
+                      645nm:
+                        type: number
+                        example: 2.0
+                      680nm:
+                        type: number
+                        example: 1.2
+                      705nm:
+                        type: number
+                        example: 1.3
+                      730nm:
+                        type: number
+                        example: 0.0
+                      760nm:
+                        type: number
+                        example: 1.0
+                      810nm:
+                        type: number
+                        example: 1.0
+                      860nm:
+                        type: number
+                        example: 3.1
+                      900nm:
+                        type: number
+                        example: 1.1
+                      940nm:
+                        type: number
+                        example: 0.1
+        '404': 
+          description: currently no data available 
+
+  /sensor/values/raw:
+    get:
+      summary: raw values getter
+      description: Returns an object containing the current raw values.
+      operationId: getRawValues
+            
+      responses:
+        '200':
+          description: An object containing the measured values
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: number
+                    example: 1675274821494
+                  unit:
+                    type: string
+                    example: 'µW/cm²'
+                  values:
+                    type: object
+                    properties:
+                      410nm:
+                        type: number
+                        example: 1
+                      435nm:
+                        type: number
+                        example: 0
+                      460nm:
+                        type: number
+                        example: 0
+                      485nm:
+                        type: number
+                        example: 1
+                      510nm:
+                        type: number
+                        example: 7
+                      535nm:
+                        type: number
+                        example: 0
+                      560nm:
+                        type: number
+                        example: 0
+                      585nm:
+                        type: number
+                        example: 1
+                      610nm:
+                        type: number
+                        example: 1
+                      645nm:
+                        type: number
+                        example: 2
+                      680nm:
+                        type: number
+                        example: 1
+                      705nm:
+                        type: number
+                        example: 1
+                      730nm:
+                        type: number
+                        example: 0
+                      760nm:
+                        type: number
+                        example: 1
+                      810nm:
+                        type: number
+                        example: 1
+                      860nm:
+                        type: number
+                        example: 3
+                      900nm:
+                        type: number
+                        example: 1
+                      940nm:
+                        type: number
+                        example: 0
+        '404': 
+          description: currently no data available 
+
+  /sensor/values/temperature:
+    get:
+      summary: temperatures getter
+      description: Returns an object containing the current temperature values.
+      operationId: getTemperatures
+            
+      responses:
+        '200':
+          description: An object containing the measured temperatures.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: number
+                    example: 1675274821494
+                  unit:
+                    type: string
+                    example: '°C'
+                  values:
+                    type: object
+                    properties:
+                      AS72651:
+                        type: number
+                        example: 23
+                      AS72652:
+                        type: number
+                        example: 22
+                      AS72653:
+                        type: number
+                        example: 21
+
+        '404': 
+          description: currently no data available 
+
+  /sensor/versions:
+    get:
+      summary: sensor soft- and hardware version getter
+      description: Returns an object containing the soft- and hardware version of the sensor.
+      operationId: getSensoVersions
+            
+      responses:
+        '200':
+          description: An object containing soft- and hardware version the sensor.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  software:
+                    type: string
+                    example: '12.0.0'
+                  hardware:
+                    type: string
+                    example: '0x4041'
 
   /info:
     get:
-      summary: get service related informations
-      description: Returns the version, url path prefix and startup time of the service.
+      summary: service info getter
+      description: Returns an object containing informations regarding the service.
       operationId: getServiceInfo
+            
       responses:
         '200':
-          description: An object containing the version, pathPrefix and start time of the service.
+          description: An object containing informations regarding the service.
           content:
             application/json:
               schema:

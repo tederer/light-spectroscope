@@ -9,7 +9,6 @@ require('./Sensor.js');
 require('./StaticWebContent.js');
 require('./interfaces/PrometheusInterface.js');
 require('./interfaces/RestInterface.js');
-require('./swagger/SwaggerUI.js');
 
 var startup = async function startup() {
 
@@ -25,14 +24,13 @@ var startup = async function startup() {
       port:                      process.env.WEBSERVER_PORT ?? DEFAULT_PORT,
       pathPrefix:                PATH_PREFIX, 
       openApiYamlFilenamePath:   __dirname + '/openapi.yaml',
-      activateSwagger:           process.env.ACTIVATE_SWAGGER === 'true',
+      activateSwagger:           true,
       info:                      common.MainInitializer.initialize(PATH_PREFIX)
    };
    
    var webserver = new common.webserver.Webserver(webserverSettings, app => {
       new spectroscope.PrometheusInterface(app, PATH_PREFIX, bus);
       new spectroscope.RestInterface(app, PATH_PREFIX, bus);
-      new spectroscope.SwaggerUI(app, PATH_PREFIX, WEB_ROOT_FOLDER);
       new spectroscope.StaticWebContent(app, PATH_PREFIX, WEB_ROOT_FOLDER);
    });
 
