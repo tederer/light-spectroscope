@@ -84,7 +84,6 @@ spectroscope.RestInterface = function RestInterface(app, PATH_PREFIX, bus) {
          calibratedSensorValues = extractValues(values, 'calibratedValues');
          rawSensorValues        = extractValues(values, 'rawValues');
          sensorTemperatures     = extractValues(values, 'temperatures');
-         // TODO units
       } else {
          resetData();
          LOGGER.logError('received invalid sensor values: ' + JSON.stringify(values));
