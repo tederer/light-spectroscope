@@ -19,6 +19,7 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
    var removeUi                  = settings.removeUi;
    var showSensorValues          = settings.showSensorValues;
 
+   const validSensorValues       = (new spectroscope.SensorValuesValidator()).containsAllData;
    const UNIT_CSS_SELECTOR       = '#' + tabId + ' #unit';
    const CLIPBOARD_CSS_SELECTOR  = '#' + tabId + ' #copyToClipboardIcon';
    
@@ -66,15 +67,6 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
          }
          updateUi();
       }
-   };
-
-   var validSensorValues = function validSensorValues(values) {
-      return   (typeof values                   === 'object') &&
-               (typeof values.timestamp         === 'number') &&
-               (typeof values.rawValues         === 'object') &&
-               (typeof values.calibratedValues  === 'object') &&
-               (typeof values.temperatures      === 'object') &&
-               (values.rawValues.length         === values.calibratedValues.length);
    };
 
    var onSensorValuesReceived = function onSensorValuesReceived(values) {

@@ -21,7 +21,7 @@ assertNamespace('common.webserver');
  */
 common.webserver.Webserver = function Webserver(settings, initializationFunction) {
 
-   var LOGGER                    = common.logging.LoggingSystem.createLogger('Webserver');
+   const LOGGER                  = common.logging.LoggingSystem.createLogger('Webserver');
    
    var express                   = require('express');
    var bodyParser                = require('body-parser');

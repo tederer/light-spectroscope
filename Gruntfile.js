@@ -41,7 +41,7 @@ module.exports = function(grunt) {
       
       concat: {
          javascripts: {
-            src: ['src/common/infrastructure/**/*.js', 'src/client/**/*.js', 'src/SharedTopics.js'],
+            src: ['src/common/infrastructure/**/*.js', 'src/client/**/*.js', 'src/SharedTopics.js', 'src/SensorValuesValidator.js'],
             dest: CLIENT_LIBRARY,
             filter: function(filepath) {
                var nameSpaceUtils = 'NamespaceUtils.js';

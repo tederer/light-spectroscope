@@ -7,7 +7,8 @@ spectroscope.client.InfoTab = function InfoTab(bus) {
    const CSS_SELECTOR       = '#infoTab #values';
    const SENSOR_CHIP_NAMES  = ['AS72651', 'AS72652', 'AS72653'];
    const TEMPERATURE_PREFIX = 'temperature';
-
+   const validSensorValues  = (new spectroscope.SensorValuesValidator()).containsAllData;
+   
    var connected        = false;
    var tableInitialized = false;
    var sensorState;
@@ -72,15 +73,6 @@ spectroscope.client.InfoTab = function InfoTab(bus) {
                (typeof state.versions === 'object') &&
                (typeof state.versions.software === 'string') &&
                (typeof state.versions.hardware === 'string');
-   };
-
-   var validSensorValues = function validSensorValues(values) {
-      return   (typeof values === 'object') &&
-               (typeof values.timestamp === 'number') &&
-               (typeof values.rawValues === 'object') &&
-               (typeof values.calibratedValues === 'object') &&
-               (typeof values.temperatures === 'object') &&
-               (values.rawValues.length === values.calibratedValues.length);
    };
 
    var onSensorValuesReceived = function onSensorValuesReceived(values) {

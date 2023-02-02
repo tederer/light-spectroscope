@@ -46,7 +46,8 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
                                                    {sourceIndex: 2, name: 'AS72653'}]
                                     };
    
-   var LOGGER     = common.logging.LoggingSystem.createLogger('Sensor');
+   const  LOGGER                 = common.logging.LoggingSystem.createLogger('Sensor');
+
    var connection = new spectroscope.SensorConnection(serialPortPath, bus);
    var pendingPollTask;
    var lastPubishedValues;

@@ -21,14 +21,12 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    const RESTART_DELAY_IN_MS     = 1000;
    const COMMAND_TIMEOUT_IN_MS   = 1000;
    const BAUDRATE                = 115200;
-
-   const ENTIRE_LINE             = 0;
-
+   const LOGGER                  = common.logging.LoggingSystem.createLogger('SensorConnection');
+   
    const { SerialPort }         = require('serialport');
    const readlinePromises       = require('node:readline/promises');
    const fs                     = require('fs');
 
-   var LOGGER = common.logging.LoggingSystem.createLogger('SensorConnection');
    
    var lineReader;
    var openedCallback;

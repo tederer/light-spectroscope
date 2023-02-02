@@ -3,6 +3,7 @@
 require('../common/NamespaceUtils.js');
 require('../common/logging/LoggingSystem.js');
 require('../SharedTopics.js');
+require('../SensorValuesValidator.js');
 
 assertNamespace('spectroscope');
 
@@ -13,19 +14,13 @@ assertNamespace('spectroscope');
  */
 spectroscope.RestInterface = function RestInterface(app, PATH_PREFIX, bus) {
 
-   var LOGGER = common.logging.LoggingSystem.createLogger('RestInterface');
+   const LOGGER                = common.logging.LoggingSystem.createLogger('RestInterface');
+   const VALIDATOR             = new spectroscope.SensorValuesValidator();
+   const containsAllData       = VALIDATOR.containsAllData;
+   const containsTimestampOnly = VALIDATOR.containsTimestampOnly;
    
    var calibratedSensorValues;
    var rawSensorValues;
-
-   var validSensorValues = function validSensorValues(values) {
-      return   (typeof values                   === 'object') &&
-               (typeof values.timestamp         === 'number') &&
-               (typeof values.rawValues         === 'object') &&
-               (typeof values.calibratedValues  === 'object') &&
-               (typeof values.temperatures      === 'object') &&
-               (values.rawValues.length         === values.calibratedValues.length);
-   };
 
    var sendCalibratedSensorValues = function sendCalibratedSensorValues(request, response) {
       if (calibratedSensorValues !== undefined) {
@@ -53,7 +48,13 @@ spectroscope.RestInterface = function RestInterface(app, PATH_PREFIX, bus) {
    };
 
    var onSensorValuesReceived = function onSensorValuesReceived(values) {
-      if (validSensorValues(values)) {
+      if (containsTimestampOnly(values) && !containsAllData(values)) {
+         calibratedSensorValues = undefined;
+         rawSensorValues        = undefined;
+         return;
+      }
+
+      if (containsAllData(values)) {
          calibratedSensorValues = extractValues(values, 'calibratedValues');
          rawSensorValues        = extractValues(values, 'rawValues');
       } else {

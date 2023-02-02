@@ -3,6 +3,7 @@
 require('../common/NamespaceUtils.js');
 require('../common/logging/LoggingSystem.js');
 require('../SharedTopics.js');
+require('../SensorValuesValidator.js');
 
 assertNamespace('spectroscope');
 
@@ -13,24 +14,17 @@ assertNamespace('spectroscope');
  */
 spectroscope.PrometheusInterface = function PrometheusInterface(app, PATH_PREFIX, bus) {
 
-   const METRIC_PATH       = '/metrics';
-   const METRIC_NAME       = 'light_spectrum_total';
-   const WAVELENGTH_LABEL  = 'wavelength';
-   const DATATYPE_LABEL    = 'type';
-   const DATATYPES         = ['calibrated', 'raw'];
-
-   var LOGGER = common.logging.LoggingSystem.createLogger('PrometheusInterface');
+   const METRIC_PATH           = '/metrics';
+   const METRIC_NAME           = 'light_spectrum_total';
+   const WAVELENGTH_LABEL      = 'wavelength';
+   const DATATYPE_LABEL        = 'type';
+   const DATATYPES             = ['calibrated', 'raw'];
+   const LOGGER                = common.logging.LoggingSystem.createLogger('PrometheusInterface');
+   const VALIDATOR             = new spectroscope.SensorValuesValidator();
+   const containsAllData       = VALIDATOR.containsAllData;
+   const containsTimestampOnly = VALIDATOR.containsTimestampOnly;
    
    var responseContent;
-
-   var validSensorValues = function validSensorValues(values) {
-      return   (typeof values                   === 'object') &&
-               (typeof values.timestamp         === 'number') &&
-               (typeof values.rawValues         === 'object') &&
-               (typeof values.calibratedValues  === 'object') &&
-               (typeof values.temperatures      === 'object') &&
-               (values.rawValues.length         === values.calibratedValues.length);
-   };
 
    var getWaveLengthNames = function getWaveLengthNames(values) {
       return Object.keys(values.rawValues.values).sort();
@@ -52,7 +46,12 @@ spectroscope.PrometheusInterface = function PrometheusInterface(app, PATH_PREFIX
    };
 
    var onSensorValuesReceived = function onSensorValuesReceived(values) {
-      if (validSensorValues(values)) {
+      if (containsTimestampOnly(values) && !containsAllData(values)) {
+         responseContent = undefined;
+         return;
+      }
+
+      if (containsAllData(values)) {
          responseContent = '';
          
          DATATYPES.forEach((type, index) => {

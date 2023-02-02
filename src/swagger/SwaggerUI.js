@@ -13,7 +13,7 @@ assertNamespace('spectroscope');
  */
 spectroscope.SwaggerUI = function SwaggerUI(app, PATH_PREFIX, WEB_ROOT_FOLDER) {
 
-   var LOGGER                    = common.logging.LoggingSystem.createLogger('SwaggerUI');
+   const LOGGER                  = common.logging.LoggingSystem.createLogger('SwaggerUI');
    
    var pathToSwaggerUi           = require('swagger-ui-dist').absolutePath(); 
    var express                   = require('express');
