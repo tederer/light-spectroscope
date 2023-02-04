@@ -6,6 +6,7 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
 
    const CART_CANVAS_CSS_SELECTOR = '#chartTab #chartCanvas';
    const VALUE_TYPE_CSS_SELECTOR  = '#chartTab #valuesTypeToDisplay';
+   const LIGHT_GREY               = '#D3D3D3';
 
    const BACKGROUND_COLORS        = {
       '410nm': '#8700FA',
@@ -52,7 +53,7 @@ spectroscope.client.ChartTab = function ChartTab(bus) {
          return [];
       }
 
-      return waveLengthNames.map(waveLengthName => BACKGROUND_COLORS[waveLengthName] ?? '#FFFFFF');
+      return waveLengthNames.map(waveLengthName => BACKGROUND_COLORS[waveLengthName] ?? LIGHT_GREY);
    };
 
    var initializeUi = function initializeUi() {
