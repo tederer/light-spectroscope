@@ -7,7 +7,7 @@ This project implements a low cost light-spectroscope using the AS7265x sensors.
 * a [Swagger UI](https://swagger.io/tools/swagger-ui/) to test the REST interface
 * a [Prometheus](https://prometheus.io) interface to provide data to Prometheus
 
-# hardware
+## Required hardware
 
 The light-spectroscope consists of the following hardware components:
 
@@ -23,11 +23,13 @@ The following software is required to install and use the project.
 
 ## Hardware installation/assembly
 
-TODO: add some pictures here
+The [Hookup Guide](https://learn.sparkfun.com/tutorials/spectral-triad-as7265x-hookup-guide) (provided by SparkFun) explain very well how to connect the serial port to USB adapter to the sensor. The following images shows the hardware ready to use. 
 
-## Installation
+![hardware](images/light-spectroscope_hardware.png)
 
-This section describes how to install the workshop project.
+## Service installation
+
+This section describes how to install service.
 
 ### Linux
 1. execute `git clone https://github.com/tederer/light-spectroscope.git`
@@ -46,7 +48,12 @@ This section describes how to install the workshop project.
 
 ## Starting the service 
 
-To start the service, the following steps need to get executed.
+The following optional environment variables can get used.
+
+| env variable | default | range | description  |
+| -------------------- | :-----: | ----- | -----------: |
+| LOG_LEVEL            | INFO    | "DEBUG", "INFO", "WARNING", "ERROR", "OFF"| Specifies how detailed the log output will be.|
+| WEBSERVER_PORT       | 80      | positive integer | Specifies the port the webserver will use to accept incoming requests.|
 
 ### Linux
 
@@ -55,8 +62,16 @@ To start the service, the following steps need to get executed.
 
 ### Windows
 
-1. start `light-spectroscope/openCliHere.bat`
+1. execute `light-spectroscope/openCliHere.bat`
 2. execute `npm start`
+
+## User interface
+
+To open the web based user interface of the light spectroscope service, all you need to do is open a web browser (e.g. firefox) and open the URL "http://localhost" (add the port if changed by using the environment variable WEBSERVER_PORT). The following screenshot shows the web based user interface of the light spectroscope service.
+
+![hardware](images/userInterface.jpg)
+
+The small clipboard icon in the heading can be used to copy the data (in csv format) to the clipboard.
 
 ## References
 
