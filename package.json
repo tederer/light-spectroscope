@@ -32,6 +32,7 @@
       "node": ">=18.x"
    },
    "scripts": {
-      "start": "node ./src/Main.js"
+      "start": "node ./src/Main.js",
+      "grunt": "./node_modules/.bin/grunt"
    }
 }
