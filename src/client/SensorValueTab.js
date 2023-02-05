@@ -84,6 +84,10 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
       }, 1000);
    };
 
+   var formatNumber = function formatNumber(number) {
+      return number.toLocaleString().replace(/\s/g, '');
+   };
+
    var copyDataToClipboard = function copyDataToClipboard() {
       if ((copyToClipboardTask === undefined) && (sensorValues !== undefined)) {
          var text            = (new Date()).toISOString() + '\n\ncalibrated values:\n';
@@ -95,11 +99,11 @@ spectroscope.client.SensorValueTab = function SensorValueTab(settings) {
          });
          text += heading + '\n';
          waveLengthNames.forEach(waveLengthName => {
-            text += sensorValues.calibratedValues.values[waveLengthName].toLocaleString() + ';';
+            text += formatNumber(sensorValues.calibratedValues.values[waveLengthName]) + ';';
          });
          text += '\n\nraw values:\n' + heading + '\n';
          waveLengthNames.forEach((waveLengthName, index) => {
-            text += sensorValues.rawValues.values[waveLengthName].toLocaleString() + ';';
+            text += formatNumber(sensorValues.rawValues.values[waveLengthName]) + ';';
          });
 
          navigator.clipboard.writeText(text)
