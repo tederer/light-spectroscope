@@ -1,5 +1,6 @@
 /* global common, __dirname, process, spectroscope */
 
+require('./common/logging/LoggingSystem.js');
 require('./common/webserver/Webserver.js');
 require('./common/MainInitializer.js');
 require('./common/infrastructure/bus/Bus.js');
@@ -15,11 +16,18 @@ var startup = async function startup() {
    const DEFAULT_PORT = 80;
    const PATH_PREFIX  = '';
    
+   const LOGGER           = common.logging.LoggingSystem.createLogger('Main');
    const path             = require('node:path');
    const bus              = new common.infrastructure.bus.Bus();
    const topicsToTransmit = [spectroscope.shared.topics.SENSOR_STATE, spectroscope.shared.topics.SENSOR_VALUES];
    const WEB_ROOT_FOLDER  = path.resolve(path.dirname(process.argv[1]), '..') + '/webroot';
-   
+   const SERIAL_PORT      = process.env.SERIAL_PORT;
+
+   if (SERIAL_PORT === undefined) {
+      LOGGER.logError('cannot start because environment variable SERIAL_PORT not set');
+      process.exit(1);
+   }
+
    const webserverSettings = {
       port:                      process.env.WEBSERVER_PORT ?? DEFAULT_PORT,
       pathPrefix:                PATH_PREFIX, 
@@ -39,7 +47,7 @@ var startup = async function startup() {
    
    new common.infrastructure.busbridge.ServerSocketIoBusBridge(bus, topicsToTransmit, io);
    
-   new spectroscope.Sensor('com5', bus);
+   new spectroscope.Sensor(SERIAL_PORT, bus);
 };
 
 startup();
