@@ -95,7 +95,9 @@ To open the web based user interface of the light spectroscope service, all you 
 
 The small clipboard icon in the heading can be used to copy the data (in csv format) to the clipboard.
 
-![hardware](images/userInterface_chartView.jpg)
+![chartView](images/userInterface_chartView.jpg)
+![hartableView](images/userInterface_tableView.jpg)
+![info](images/userInterface_info.jpg)
 
 ## References
 
