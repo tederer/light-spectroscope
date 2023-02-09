@@ -110,7 +110,7 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
          var temperatures     = await connection.sendCommand('ATTEMP');
          publishValues(startInMs, rawValues, calibratedValues, temperatures);
       } catch(error) {
-         LOGGER.logError('restarting connection because values polling failed: ' + error);
+         LOGGER.logError('polling failed: ' + error);
          continuePolling = false;
          publishEmptyValues();
          connection.restart();

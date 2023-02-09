@@ -36,6 +36,7 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    var thisInstance   = this;
    var lastPublishedState;
    var serviceVersion;
+   var pendingConnectionRestart = false;
 
    this.sendCommand = async function sendCommand(command) {
       if (lineReader === undefined) {
@@ -136,7 +137,13 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    };
 
    this.restart = function restart() {
+      if (pendingConnectionRestart) {
+         return;
+      }
+
       LOGGER.logInfo('restarting connection');
+      pendingConnectionRestart = true;
+
       if (lineReader !== undefined) {
          var lineReaderToClose = lineReader;
          lineReader            = undefined;
@@ -171,7 +178,10 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       });
       
       serialPort.on('error', message => {
-         LOGGER.logError('received error event: ' + message);
+         if(serialPort.isOpen) {
+            LOGGER.logError('closing serial port because of: ' + message);
+            serialPort.close();
+         }
          thisInstance.restart();
       });
       
@@ -179,6 +189,8 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
          LOGGER.logError('received close event: ' + message);
          thisInstance.restart();
       });
+
+      pendingConnectionRestart = false;
    };
 
    this.onConnectionOpened = function onConnectionOpened(callback) {
