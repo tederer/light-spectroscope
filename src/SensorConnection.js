@@ -3,6 +3,7 @@
 require('./common/NamespaceUtils.js');
 require('./common/logging/LoggingSystem.js');
 require('./SharedTopics.js');
+require('./MessageRecorder.js');
 
 assertNamespace('spectroscope');
 
@@ -18,11 +19,12 @@ assertNamespace('spectroscope');
  */
 spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
 
-   const RESTART_DELAY_IN_MS     = 1000;
-   const COMMAND_TIMEOUT_IN_MS   = 1000;
-   const BAUDRATE                = 115200;
-   const LOGGER                  = common.logging.LoggingSystem.createLogger('SensorConnection');
-   
+   const RESTART_DELAY_IN_MS    = 1000;
+   const COMMAND_TIMEOUT_IN_MS  = 1000;
+   const BAUDRATE               = 115200;
+   const LOGGER                 = common.logging.LoggingSystem.createLogger('SensorConnection');
+   const RECORDER               = new spectroscope.MessageRecorder();
+
    const { SerialPort }         = require('serialport');
    const readlinePromises       = require('node:readline/promises');
    const fs                     = require('fs');
@@ -40,16 +42,19 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
          throw 'cannot send command "' + command + '": lineReader is undefined';
       }
 
+      RECORDER.clear();
+
       try {
-         LOGGER.logDebug('sending: ' + command);
-         var response         = await lineReader.question(command + '\n', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
-         var trimmedResponse  = (response ?? '').trim();
-         LOGGER.logDebug('response = "' + response + '"');
+         RECORDER.addOutput(command);
+         var response = await lineReader.question(command + '\n', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
+         RECORDER.addInput(response);
          
+         var trimmedResponse = (response ?? '').trim();
+
          if (trimmedResponse.toUpperCase().endsWith('OK')) {
             return trimmedResponse.substring(0, trimmedResponse.length - 'OK'.length).trim();
          } else {
-            throw 'unexpected response "' + response + '"';
+            throw 'unexpected response' + RECORDER.getMessages();
          }
       } catch(error) {
          throw error;
@@ -85,13 +90,18 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
    var readLinesTillTimeout = async function readLinesTillTimeout() {
       var lineRead = true;
       
+      RECORDER.clear();
+      
       while(lineRead) {
          try {
-            await lineReader.question('', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
+            var line = await lineReader.question('', {signal: AbortSignal.timeout(COMMAND_TIMEOUT_IN_MS)});
+            RECORDER.addInput(line);
          } catch(error) {
             lineRead = false;
          }
       }
+
+      RECORDER.logMessages(LOGGER, 'discarded pending input lines');
    };
 
    var initialize = async function initialize() {
@@ -100,8 +110,8 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       var lastError;
 
       LOGGER.logInfo('initializing connection');
-      await readLinesTillTimeout();       
-      LOGGER.logInfo('discarded all pending input lines');
+
+      await readLinesTillTimeout();  
       
       while (!initialized && (retries > 0)) {
          var command = 'AT';
@@ -109,7 +119,7 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
             await thisInstance.sendCommand(command);
             initialized = true;
          } catch(error) {
-            lastError = 'failed to send "' + command + '": ' + error;
+            lastError = error;
          }
          retries--;
       }
