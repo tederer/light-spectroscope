@@ -178,8 +178,9 @@ spectroscope.SensorConnection = function SensorConnection(serialPortPath, bus) {
       });
       
       serialPort.on('error', message => {
+         LOGGER.logError('serial port error received: ' + message);
          if(serialPort.isOpen) {
-            LOGGER.logError('closing serial port because of: ' + message);
+            LOGGER.logError('closing serial port');
             serialPort.close();
          }
          thisInstance.restart();

@@ -62,10 +62,11 @@ spectroscope.Sensor = function Sensor(serialPortPath, bus) {
       var values = commaSeparatedValues.replace(/,\s*/g, separator).split(separator);
 
       if (values.length !== format.mapping.length) {
-         throw 'cannot map ' + format.description + ' because number of values (' + values.length + ') is not ' + format.mapping.length;
+         LOGGER.logError('cannot map ' + format.description + ' because number of values (' + 
+            values.length + ') is not ' + format.mapping.length + ' (input="' + commaSeparatedValues + '")');
+      } else {
+         format.mapping.forEach(mapping => result.values[mapping.name] = Number.parseFloat(values[mapping.sourceIndex]));
       }
-
-      format.mapping.forEach(mapping => result.values[mapping.name] = Number.parseFloat(values[mapping.sourceIndex]));
       
       return result;
    };
