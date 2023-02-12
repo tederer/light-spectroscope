@@ -109,3 +109,4 @@ The small clipboard icon in the heading can be used to copy the data (in csv for
 * [Prometheus text based exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/)
 * [Prometheus metric and label naming](https://prometheus.io/docs/practices/naming/)
 * [Prometheus data model](https://prometheus.io/docs/concepts/data_model/)
+* [Prometheus getting started](https://prometheus.io/docs/prometheus/latest/getting_started/)
