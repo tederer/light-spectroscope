@@ -24,11 +24,11 @@ The [Hookup Guide](https://learn.sparkfun.com/tutorials/spectral-triad-as7265x-h
 
 The following environment variables get used by the service.
 
-| env variable         |           |default | range  | description  |
+| env variable         | mandatory |default | range  | description  |
 | -------------------- | --------- | :-----: | ------ | -----------: |
-| SERIAL_PORT          | mandatory |         | string | Specifies the serial port to use (e.g. "com5", "/dev/ttyUSB0").|
-| LOG_LEVEL            | optional  | INFO    | "DEBUG", "INFO", "WARNING", "ERROR", "OFF"| Specifies how detailed the log output will be.|
-| WEBSERVER_PORT       | optional  | 80      | positive integer | Specifies the port the webserver will use to accept incoming requests.|
+| SERIAL_PORT          | yes       | string | Specifies the serial port to use (e.g. "com5", "/dev/ttyUSB0").|
+| LOG_LEVEL            | no        | INFO    | "DEBUG", "INFO", "WARNING", "ERROR", "OFF"| Specifies how detailed the log output will be.|
+| WEBSERVER_PORT       | no        | 80      | positive integer | Specifies the port the webserver will use to accept incoming requests.|
 
 ## Starting the service (Docker container)
 
