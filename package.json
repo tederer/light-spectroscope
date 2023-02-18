@@ -1,6 +1,6 @@
 {
    "name": "light-spectroscope",
-   "version": "0.1.0",
+   "version": "1.0.0",
    "description": "Implementation of a low cost light-spectroscope using AS7265x sensors.",
    "private": true,
    "author": {
